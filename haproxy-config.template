@@ -455,13 +455,13 @@ backend {{genBackendNamePrefix $cfg.TLSTermination}}:{{$cfgIdx}}
   http-request add-header Forwarded for=%[src];host=%[req.hdr(host)];proto=%[req.hdr(X-Forwarded-Proto)];proto-version=%[req.hdr(X-Forwarded-Proto-Version)]
   {{- end }}
 
-  {{- if not (isTrue (index $cfg.Annotations "haproxy.router.openshift.io/disable_cookies")) }}
-  cookie {{firstMatch $cookieNamePattern (index $cfg.Annotations "router.openshift.io/cookie_name") (env "ROUTER_COOKIE_NAME" "") $cfg.RoutingKeyName}} insert indirect nocache httponly
-    {{- if and (matchValues (print $cfg.TLSTermination) "edge" "reencrypt") (ne $cfg.InsecureEdgeTerminationPolicy "Allow") }} secure
-    {{- end }}
-    {{- if isTrue (index $cfg.Annotations "haproxy.router.openshift.io/cookie_same_site }} attr "SameSite=Strict"
-    {{- end }}
-  {{- end }}{{/* end disable cookies check */}}
+#  {{- if not (isTrue (index $cfg.Annotations "haproxy.router.openshift.io/disable_cookies")) }}
+#  cookie {{firstMatch $cookieNamePattern (index $cfg.Annotations "router.openshift.io/cookie_name") (env "ROUTER_COOKIE_NAME" "") $cfg.RoutingKeyName}} insert indirect nocache httponly
+#    {{- if and (matchValues (print $cfg.TLSTermination) "edge" "reencrypt") (ne $cfg.InsecureEdgeTerminationPolicy "Allow") }} secure
+#    {{- end }}
+#    {{- if isTrue (index $cfg.Annotations "haproxy.router.openshift.io/cookie_same_site }} attr "SameSite=Strict"
+#    {{- end }}
+#  {{- end }}{{/* end disable cookies check */}}
 
   {{- if matchValues (print $cfg.TLSTermination) "edge" "reencrypt" }}
     {{- with $hsts := firstMatch $hstsPattern (index $cfg.Annotations "haproxy.router.openshift.io/hsts_header") }}

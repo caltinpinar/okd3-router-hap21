@@ -71,6 +71,17 @@ RUN set -x \
   && setcap 'cap_net_bind_service=ep' /usr/local/sbin/haproxy \
   && rm -rf /usr/src/ \
   && yum -y autoremove $buildDeps \
-  && yum -y clean all
+  && yum -y clean all \
+  && chown -R :0 /var/lib/haproxy \
+  && chmod -R g+w /var/lib/haproxy
 
 USER 1001
+
+RUN mkdir -p /var/lib/haproxy/router/{certs,cacerts,whitelists} && \
+    mkdir -p /var/lib/haproxy/{conf/.tmp,run,bin,log} && \
+    touch /var/lib/haproxy/conf/{{os_http_be,os_edge_reencrypt_be,os_tcp_be,os_sni_passthrough,os_route_http_redirect,cert_config,os_wildcard_domain}.map,haproxy.config}
+
+ENV TEMPLATE_FILE=/var/lib/haproxy/conf/haproxy-config.template \
+    RELOAD_SCRIPT=/var/lib/haproxy/reload-haproxy
+
+ENTRYPOINT ["/usr/bin/openshift-router", "--v=2"]
